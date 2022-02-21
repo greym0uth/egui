@@ -25,6 +25,7 @@ pub struct Button {
     /// None means default for interact
     fill: Option<Color32>,
     stroke: Option<Stroke>,
+    corner_radius: Rounding,
     sense: Sense,
     small: bool,
     frame: Option<bool>,
@@ -39,6 +40,7 @@ impl Button {
             wrap: None,
             fill: None,
             stroke: None,
+            corner_radius: Rounding::none(),
             sense: Sense::click(),
             small: false,
             frame: None,
@@ -58,6 +60,7 @@ impl Button {
             text: text.into(),
             fill: None,
             stroke: None,
+            corner_radius: Rounding::none(),
             sense: Sense::click(),
             small: false,
             frame: None,
@@ -120,6 +123,12 @@ impl Button {
         self.min_size = min_size;
         self
     }
+
+    // Change the roundness of the corners
+    pub fn corner_radius(mut self, corner_radius: Rounding) -> Self {
+        self.corner_radius = corner_radius;
+        self
+    }
 }
 
 impl Widget for Button {
@@ -129,6 +138,7 @@ impl Widget for Button {
             wrap,
             fill,
             stroke,
+            corner_radius,
             sense,
             small,
             frame,
@@ -180,7 +190,7 @@ impl Widget for Button {
                 let stroke = stroke.unwrap_or(visuals.bg_stroke);
                 ui.painter().rect(
                     rect.expand(visuals.expansion),
-                    visuals.rounding,
+                    corner_radius,
                     fill,
                     stroke,
                 );
@@ -265,7 +275,7 @@ impl<'a> Widget for Checkbox<'a> {
             let (small_icon_rect, big_icon_rect) = ui.spacing().icon_rectangles(rect);
             ui.painter().add(epaint::RectShape {
                 rect: big_icon_rect.expand(visuals.expansion),
-                rounding: visuals.rounding,
+                rounding: corner_radius,
                 fill: visuals.bg_fill,
                 stroke: visuals.bg_stroke,
             });
@@ -391,6 +401,7 @@ pub struct ImageButton {
     sense: Sense,
     frame: bool,
     selected: bool,
+    corner_radius: Rounding,
 }
 
 impl ImageButton {
@@ -400,6 +411,7 @@ impl ImageButton {
             sense: Sense::click(),
             frame: true,
             selected: false,
+            corner_radius: Rounding::none(),
         }
     }
 
@@ -433,6 +445,12 @@ impl ImageButton {
         self.sense = sense;
         self
     }
+
+    // Change the roundness of the corners
+    pub fn corner_radius(mut self, corner_radius: Rounding) -> Self {
+        self.corner_radius = corner_radius;
+        self
+    }
 }
 
 impl Widget for ImageButton {
@@ -442,6 +460,7 @@ impl Widget for ImageButton {
             sense,
             frame,
             selected,
+            corner_radius,
         } = self;
 
         let padding = if frame {
@@ -459,7 +478,7 @@ impl Widget for ImageButton {
                 let selection = ui.visuals().selection;
                 (
                     -padding,
-                    Rounding::none(),
+                    corner_radius,
                     selection.bg_fill,
                     selection.stroke,
                 )
@@ -472,7 +491,7 @@ impl Widget for ImageButton {
                 };
                 (
                     expansion,
-                    visuals.rounding,
+                    corner_radius,
                     visuals.bg_fill,
                     visuals.bg_stroke,
                 )
